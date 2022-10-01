@@ -1,5 +1,5 @@
 <?php
-// ### ОБЪЕКТНЫЙ МЕТОД ###
+// ### ПРОЦЕДУРНЫЙ МЕТОД ###
 
 $day = "16"; // день первого месяца, с которого начинаем подсчёт рабочих дней
 $month = "10";  // месяц, с которого начинаем подсчёт рабочих дней
@@ -21,7 +21,7 @@ function daysOfCalendar($day, $month, $year, $quantityMonths): array { // фун
 
     $start_date = $day."-".$month."-".$year;
     $start_time = strtotime($start_date);
-    $startMonth = DateTime::createFromFormat('m', $start_time); // стартовый месяц
+    $startMonth = date('m', $start_time);
 
     $end_time = strtotime("+$quantityMonths month", $start_time);
 
@@ -30,8 +30,7 @@ function daysOfCalendar($day, $month, $year, $quantityMonths): array { // фун
 
     for($i=$start_time; $i<$end_time; $i+=24*60*60)
     {
-        $date = DateTime::createFromFormat('U', $i);  // вычисление текущей даты
-        $currentMonth = $date -> format('m');    // текущий месяц обрабатываемой даты
+        $currentMonth = date('m', $i);
 
         if ($currentMonth !== $temporalValueMonth) {
             $temporalValueMonth = $currentMonth;
@@ -40,7 +39,7 @@ function daysOfCalendar($day, $month, $year, $quantityMonths): array { // фун
 
         if ($counter > $quantityMonths) break;
 
-        $list[] = $date -> format('Y-m-d-D');    // помещение текущей даты в конец массива (списка дат)
+        $list[] = date('Y-m-d-D', $i);
 
     }
     return $list;
@@ -58,9 +57,9 @@ function workDaysPrint($items, $restPeriod): void { // ФУНКЦИЯ ПЕРЕБ
     foreach ( $items as $item ) {
 
         if (substr($item, -3, 3) === 'Sat' || substr($item, -3, 3) === 'Sun') // поиск выходных дней Weekend-а в общем списке
-        {
-            $fullElement = ((int)array_search($item, $items) + 1) . '.' . $item;
-            echo "\033[32m $fullElement \033[0m" . PHP_EOL; // выходные дни Weekend-а (помечается ЗЕЛЁНЫМ)
+            {
+                $fullElement = ((int)array_search($item, $items) + 1) . '.' . $item;
+                echo "\033[32m $fullElement \033[0m" . PHP_EOL; // выходные дни Weekend-а (помечается ЗЕЛЁНЫМ)
         } else {
             if ($periodCounter === 0) {
                 $fullElement = ((int)array_search($item, $items) + 1) . '.' . $item;
